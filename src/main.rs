@@ -16,9 +16,9 @@ use cli::{Cli, Commands};
 use config::{
     find_inbound, find_inbound_mut, get_clients, get_clients_mut, load_config, save_config,
 };
-use console::{style, Emoji};
+use console::{Emoji, style};
 use indicatif::{ProgressBar, ProgressStyle};
-use link::{display_qr, extract_vless_config, generate_link};
+use link::{display_qr, extract_vless_config, generate_link, resolve_address};
 use serde_json::json;
 use uuid::Uuid;
 
@@ -115,13 +115,9 @@ fn main() -> Result<()> {
             );
         }
         Commands::Show { email, address } => {
-            let final_address = address.ok_or_else(|| {
-                anyhow::anyhow!(
-                    "Server address is required. Use --address or set the XRAYMGR_ADDRESS environment variable."
-                )
-            })?;
-
             let inbound = find_inbound(&config, &cli.tag)?;
+            let final_address = resolve_address(address, inbound)?;
+
             let vless_config = extract_vless_config(inbound, &email, &final_address)?;
             let link = generate_link(&vless_config);
 

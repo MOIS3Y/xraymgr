@@ -1,9 +1,9 @@
 //! Utilities for generating and displaying VLESS links and QR codes.
 
 use crate::crypto::derive_public_key;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use console::style;
-use qrcode::{render::unicode, EcLevel, QrCode};
+use qrcode::{EcLevel, QrCode, render::unicode};
 use serde_json::Value;
 use urlencoding::encode;
 
@@ -25,6 +25,28 @@ pub struct VlessConfig {
     pub sid: String,
     /// Client email or identifier.
     pub email: String,
+}
+
+/// Resolves the server address, preferring the user-provided one, but falling
+/// back to the `listen` field in the inbound config.
+pub fn resolve_address(user_address: Option<String>, inbound: &Value) -> Result<String> {
+    if let Some(addr) = user_address {
+        Ok(addr)
+    } else if let Some(listen_addr) = inbound.get("listen").and_then(|v| v.as_str()) {
+        println!(
+            "{} {} Server address not provided, using 'listen' field \
+             from config: {}",
+            style("!").yellow().bold(),
+            style("Warning:").yellow().bold(),
+            style(listen_addr).cyan().bold()
+        );
+        Ok(listen_addr.to_string())
+    } else {
+        anyhow::bail!(
+            "Server address is required. Use --address, set \
+             XRAYMGR_ADDRESS, or define 'listen' in your inbound config."
+        );
+    }
 }
 
 /// Generates a valid VLESS sharing link based on the provided configuration.

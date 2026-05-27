@@ -48,7 +48,9 @@ xraymgr show "user@example.com" --address "my.server.com"
 ```
 
 > [!NOTE]
-> You must provide the server address either via the `--address` flag or the `XRAYMGR_ADDRESS` environment variable.
+> If the `--address` flag or `XRAYMGR_ADDRESS` environment variable is not 
+> provided, the utility will automatically fallback to using the `listen` 
+> field from your inbound configuration.
 
 ## Configuration & Fallbacks
 
@@ -58,7 +60,7 @@ To avoid typing the same flags over and over, `xraymgr` follows this hierarchy:
 |-----------|----------|--------------|--------------------|
 | **Config**| `--config` | `XRAYMGR_CONFIG` | `config.json` |
 | **Tag** | `--tag` | `XRAYMGR_TAG` | `vless-in` |
-| **Address**| `--address`| `XRAYMGR_ADDRESS`| *None (Required)* |
+| **Address**| `--address`| `XRAYMGR_ADDRESS`| `listen` from config|
 
 For example, you can add this to your `.bashrc` or `.envrc`:
 ```bash
