@@ -1,0 +1,19 @@
+# Rust
+/target
+
+# Nix
+result
+.direnv
+.envrc
+
+# Editors
+.vscode
+.idea
+.zed
+*.swp
+*~
+.nvim.lua
+.netrw*
+
+# Dev
+config.json
