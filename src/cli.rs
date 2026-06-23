@@ -47,4 +47,18 @@ pub enum Commands {
         #[arg(short, long, env = "XRAYMGR_ADDRESS")]
         address: Option<String>,
     },
+
+    /// Generate an HTML page with the client's connection info to stdout
+    Html {
+        /// Client email
+        email: String,
+
+        /// Server address (IP or domain). Falls back to XRAYMGR_ADDRESS env or SNI from config.
+        #[arg(short, long, env = "XRAYMGR_ADDRESS")]
+        address: Option<String>,
+
+        /// Path to custom HTML template
+        #[arg(long)]
+        template: Option<PathBuf>,
+    },
 }

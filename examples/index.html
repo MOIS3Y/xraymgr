@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,
+    <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
+      <text y=%22.9em%22 font-size=%2290%22>🛡️</text>
+    </svg>">
+  <title>Gateway Portal</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --surface-color: rgba(30, 41, 59, 0.6);
+      --text-color: #f8fafc;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      background-image: radial-gradient(
+        circle at 50% 0%, #1e3a8a 0%, transparent 70%
+      );
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--surface-color);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p.subtitle {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text-color);
+      font-size: 1rem;
+      box-sizing: border-box;
+      margin-bottom: 1.5rem;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    input[type="text"]::placeholder {
+      color: #64748b;
+    }
+    .btn {
+      display: block;
+      background: var(--accent-color);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+    .btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    #greeting {
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(0);
+      opacity: 1;
+      min-height: 2.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="greeting">Hello!</h1>
+    <p class="subtitle">
+      Enter your secure access ID to view your connection configuration.
+    </p>
+    
+    <form onsubmit="goToConfig(event)">
+      <input 
+        type="text" 
+        id="client-id" 
+        placeholder="Enter your ID (e.g. 550e8400...)" 
+        required 
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit" class="btn">
+        Access Configuration
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const greetings = [
+      "Hello!",      // English
+      "Привет!",     // Russian
+      "¡Hola!",      // Spanish
+      "Bonjour!",    // French
+      "Ciao!",       // Italian
+      "Hallo!",      // German
+      "こんにちは!",   // Japanese
+      "你好!",       // Chinese
+      "안녕하세요!"    // Korean
+    ];
+    let gIndex = 0;
+    const greetingEl = document.getElementById('greeting');
+    
+    setInterval(() => {
+      greetingEl.style.opacity = '0';
+      greetingEl.style.transform = 'translateY(-10px)';
+      
+      setTimeout(() => {
+        gIndex = (gIndex + 1) % greetings.length;
+        greetingEl.innerText = greetings[gIndex];
+        
+        greetingEl.style.opacity = '1';
+        greetingEl.style.transform = 'translateY(0)';
+      }, 500); // Wait for fade out
+    }, 2500); // Change greeting every 2.5 seconds
+
+    function goToConfig(e) {
+      e.preventDefault();
+      const idInput = document.getElementById('client-id');
+      const id = idInput.value.trim();
+      
+      if (id) {
+        // Redirection logic. Assumes your Nginx/Caddy serves configs 
+        // at the root level as <id>.html (e.g., 550e8400.html).
+        window.location.href = '/' + encodeURIComponent(id) + '.html';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -18,7 +18,10 @@ use config::{
 };
 use console::{Emoji, style};
 use indicatif::{ProgressBar, ProgressStyle};
-use link::{display_qr, extract_vless_config, generate_link, resolve_address};
+use link::{
+    display_qr, extract_vless_config, generate_client_json, generate_link,
+    generate_qr_svg, resolve_address,
+};
 use serde_json::json;
 use uuid::Uuid;
 
@@ -128,6 +131,39 @@ fn main() -> Result<()> {
                 style(&final_address).yellow()
             );
             display_qr(&link, &vless_config)?;
+        }
+        Commands::Html { email, address, template } => {
+            let inbound = find_inbound(&config, &cli.tag)?;
+            let final_address = resolve_address(address, inbound)?;
+
+            let vless_config = extract_vless_config(
+                inbound,
+                &email,
+                &final_address,
+            )?;
+            let link = generate_link(&vless_config);
+            let qr_svg = generate_qr_svg(&link)?;
+            let json_config = generate_client_json(&vless_config);
+
+            let template_str = match template {
+                Some(path) => std::fs::read_to_string(&path).map_err(|e| {
+                    anyhow::anyhow!(
+                        "Failed to read custom template '{}': {}",
+                        path.display(),
+                        e
+                    )
+                })?,
+                None => include_str!("../examples/user.html").to_string(),
+            };
+
+            let rendered = template_str
+                .replace("{{ XRAY_NAME }}", &email)
+                .replace("{{ XRAY_LINK }}", &link)
+                .replace("{{ XRAY_QR_SVG }}", &qr_svg)
+                .replace("{{ XRAY_JSON }}", &json_config);
+
+            // Print directly to stdout for redirection
+            println!("{}", rendered);
         }
     }
 

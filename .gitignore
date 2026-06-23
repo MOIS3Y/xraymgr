@@ -16,4 +16,4 @@ result
 .netrw*
 
 # Dev
-config.json
+/config.json

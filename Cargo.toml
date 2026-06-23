@@ -1,6 +1,6 @@
 [package]
 name = "xraymgr"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Simple CLI for managing Xray clients and generating VLESS links with QR codes"
 license = "MIT"
